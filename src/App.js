@@ -1,24 +1,44 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import React, { useState } from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import routeList from "../src/routers";
+import { AppProvider } from "./context/AppContext";
 
 function App() {
+  const [loading, setLoading] = useState(true);
+  const spinner = document.getElementById("spinner");
+  if (spinner) {
+    setTimeout(() => {
+      spinner.style.display = "none";
+      setLoading(false);
+    }, 1000);
+  }
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    !loading && (
+      <AppProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route>
+              {routeList.map((route) => {
+                const Layout = route.layout;
+                const Component = route.component;
+                return (
+                  <Route
+                    path={route.path}
+                    key={route.path}
+                    element={
+                      <Layout>
+                        <Component />
+                      </Layout>
+                    }
+                  />
+                );
+              })}
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </AppProvider>
+    )
   );
 }
 
